@@ -1,0 +1,367 @@
+html {
+	cursor: none;
+	font-family: system-ui;
+	display: grid;
+	place-items: center;
+	min-height: 100vh;
+	user-select: none;
+}
+body {
+	background: black;
+	overflow: hidden;
+	color: white;
+	--color-spark: gold;
+}
+
+.sparkler {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 1px;
+	height: 1px;
+  bottom: 50%;
+	/* transform: translate(-50%, -50%) rotate(-25deg); */
+	border-radius: 50%;
+	/* box-shadow: 0 0 2500px 60px var(--color-spark); */
+  box-shadow: 0 0 250px 20px white, 
+              0 0 100px 30px gold;
+  animation: blinkIt 2s infinite;
+}
+
+#target {
+  position: fixed;
+  left: 400px;
+  top: 300px;
+  --color-spark: #a0c4ff;
+}
+
+#target-flame {
+  position: fixed;
+  left: 400px;   /* same position as #target */
+  top: 300px;
+  /* no JS moves this — it just sits here */
+}
+
+
+
+
+/* #sparkler:before {
+	content: '';
+	width: 10px;
+	height: 25vh;
+	background: linear-gradient(to right, dimgray, silver);
+	position: absolute;
+	top: 0;
+	left: 0;
+	border-radius: 1rem;
+} */
+/* #sparkler:after {
+	content: '';
+	width: 4px;
+	height: 25vh;
+	background: linear-gradient(to right, dimgray, gray);
+	position: absolute;
+	top: calc(25vh - 1px);
+	left: 3px;
+	border-radius: 1rem;
+} */
+
+.particle {
+	width: 3px;
+	height: 3px;
+	border-radius: 50%;
+	background: radial-gradient(rgba(255,255,255) 0%, var(--color-spark));
+	box-shadow: 0 0 30px var(--color-spark);
+	filter: blur(3px);
+	position: absolute;
+	transition: .5s linear;
+	z-index: 100;
+}
+
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle 200px at center, transparent 80px, black 120px);
+  z-index: 100;
+}
+
+
+
+
+/* CANDLE START HERE */
+@import url('https://fonts.googleapis.com/css?family=Ubuntu:400,400i,700,700i');
+
+
+*, *:before, *:after {
+	margin: 0;
+	padding: 0;
+	word-break: break-all;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+html {
+  font-size: 10px;
+}
+
+body {
+	font-family: 'Ubuntu', sans-serif;
+	color: #6e6e6e;
+	font-size: 1.6rem;
+  background: black;
+}
+
+header, footer {
+  display: block;
+}
+
+a, a:link, a:visited {
+  text-decoration: none;
+}
+
+img {
+	border: 0;
+}
+
+ul {
+	list-style: none;
+}
+
+.center {
+  width: 1170px;
+  margin: 20px auto 0;
+}
+
+/* .holder {
+  margin: 12rem auto 0;
+  width: 150px;
+  height: 400px;
+  position: relative;
+}
+
+.holder *, .holder *:before, .holder *:after {
+  position: absolute;
+  content: "";
+} */
+
+/* .candle {
+  bottom: 0;
+  width: 150px;
+  height: 300px;
+  border-radius: 150px / 40px;
+  box-shadow: inset 20px -30px 50px 0 rgba(0, 0, 0, 0.4), inset -20px 0 50px 0 rgba(0, 0, 0, 0.4);
+  background: #190f02;
+  background: linear-gradient(#e48825, #e78e0e, #833c03, #4c1a03 50%, #1c0900);
+}
+
+.candle:before {
+  width: 100%;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #d47401;
+  background: #b86409;
+  background: radial-gradient(#eaa121, #8e4901 45%, #b86409 80%);
+} */
+
+/* .candle:after {
+  width: 34px;
+  height: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  top: 14px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+  background: radial-gradient(rgba(0, 0, 0, 0.6), transparent 45%);
+}
+
+.thread {  
+  width: 5px;
+  height: 36px;
+  top: -17px;
+  left: 50%;
+  z-index: 1;
+  border-radius: 40% 40% 0 0;
+  transform: translateX(-50%);
+  background: #121212;
+  background: linear-gradient(#d6994a, #4b232c, #121212, black, #e8bb31 90%);
+} */
+
+.flame {
+  width: 10px;
+  height: 10.3px;
+  left: 50%;
+  /* transform-origin: 50% 50%; */
+  /* transform: translateX(-50%); */
+  /* transform: translate(-50%, -50%) rotate(-25deg); */
+  bottom: 50%;
+  top: 50%;
+  /* border-radius: 50% 50% 20% 20%; */
+  border-radius: 75%;
+  background: rgba(255, 255, 255, 1);
+  filter: blur(0.5px);
+  background: radial-gradient(white 80%, transparent);
+  animation: moveFlame 6s linear infinite, enlargeFlame 2s linear infinite, blinkIt 2s infinite;
+  position: fixed;
+  pointer-events: none;
+  z-index: 101; /* stacking order */
+}
+
+.flame:after {
+  width: 11.5px;
+  height: 11.5px;
+  border-radius: 100%;
+  box-shadow: 0 0 13px 0 rgba(247, 93, 0, .4), 0 0px 4px 0 rgba(247, 128, 0, .7);
+}
+
+
+
+@keyframes moveFlame {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes enlargeFlame {
+  0%, 100% {
+    width: 10px;
+    height: 10.3px;
+  }
+  50% {
+    width: 10.5px;
+    height: 10.8px;
+  }
+}
+
+@keyframes flameClicked {
+  0%, 100% {
+    width: 10px;
+    height: 10.3px;
+    transform: rotate(0deg);
+  }
+  50% {
+    width: 11.3px;
+    height: 11.6px;
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sparklerClicked {
+  0% {
+    box-shadow: 0 0 250px 20px white, 
+              0 0 100px 30px gold;
+    transform: rotate(0deg);
+  }
+  50% {
+    box-shadow: 0 0 125px 30px white,
+                0 0 125px 40px gold;
+    transform: rotate(180deg);
+  }
+  100% {
+    box-shadow: 0 0 250px 20px white, 
+              0 0 100px 30px gold;
+    transform: rotate(360deg);
+  }
+}
+
+.sparkler-clicked {
+  animation: sparklerClicked 0.53s ease-out !important;
+}
+
+
+.flame-clicked {
+  animation: flameClicked 0.35s ease-out;
+}
+
+/* .glow {
+  width: 15px;
+  height: 60px;
+  border-radius: 50% 50% 35% 35%;
+  left: 50%;
+  top: -48px;
+  transform: translateX(-50%);
+  background: white;
+  box-shadow: 0 -40px 30px 0 #dc8a0c, 0 40px 50px 0 #dc8a0c, inset 3px 0 2px 0 rgba(180, 162, 75, 0.6), inset -3px 0 2px 0 rgba(242, 243, 244, 0.6);
+}
+
+.glow:before {
+  width: 70%;
+  height: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+
+*/
+
+
+.blinking-glow {
+  width: 100px;
+  height: 180px;
+  left: 50%;
+  top: -55%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #ff6000;
+  filter: blur(60px);
+  /* animation: blinkIt 1s infinite; */
+  opacity: .8;
+} 
+
+
+@keyframes blinkIt {
+  50% { opacity: 0.8;}
+  0%, 100% { opacity: 1.0;}
+}
+
+/* new frame */
+@keyframes brighter {
+  50% { opacity: .1;}
+}
+
+#scene {
+  z-index:0;
+}
+
+
+
+/* what to do next*/
+/* 
+make candle become your cursor without flame V
+but make it do what the flame is doing (probably make flame smaller into a circle?) V
+make the glow be around that flame V
+make flame ur cursor V 
+make sparks appear when you click V
+make the flame blink dimming, and the halo also dimming V
+make the flame brighter and bigger a little when clicked, V
+and the halo also become brighter and bigger when clicked, V
+but shrink back afterward V
+make the sparks follow some better path
+make it so the sparks is "brightening" the surrounding when it get closer V
+and can brighten more, when it's clicked V
+ */
+
+
+ /*
+Put a scene picture
+Make another spark that's the target, just sitting on screen somewhere
+Interaction logic between the two sparks (calculate distance)
+(if close enough?)
+Animation for the spark being in harmony
+Animation for bright engulf screen when beat a level (ignite)
+Candles as helper light source to make the area brighter a little
+Candle litting logic
+Music beat logic, how to know player is clicking on beat?
+Note for the player spark
+how to play background music
+ */
