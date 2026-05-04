@@ -1,3 +1,4 @@
+/* Make mouse disappear */
 html {
 	cursor: none;
 	font-family: system-ui;
@@ -6,13 +7,33 @@ html {
 	min-height: 100vh;
 	user-select: none;
 }
+
+/* Settings */
 body {
 	background: black;
-	overflow: hidden;
+	overflow: hidden; /*prevents scrollbars */
 	color: white;
 	--color-spark: gold;
 }
 
+/* Stacking Order: (0) scene -> (1) mask -> (2) sparklers & flames*/
+
+/* The picture/scene for the level*/
+#scene {
+  z-index:0;
+}
+
+/* The black mask covering the scene in every level */
+#mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  /* background: radial-gradient(circle 200px at center, transparent 80px, black 120px); */
+  z-index: 1;
+  pointer-events: none; /*ensure clicks go through the mask*/
+}
+
+/* The halo that makes sparks */
 .sparkler {
 	position: absolute;
 	left: 50%;
@@ -25,47 +46,21 @@ body {
 	/* box-shadow: 0 0 2500px 60px var(--color-spark); */
   box-shadow: 0 0 250px 20px white, 
               0 0 100px 30px gold;
+  z-index: 2;
   animation: blinkIt 2s infinite;
 }
 
-#target {
-  position: fixed;
-  left: 400px;
-  top: 300px;
-  --color-spark: #a0c4ff;
+.active {
+  animation: blinkIt 2s infinite;
 }
 
-#target-flame {
-  position: fixed;
-  left: 400px;   /* same position as #target */
-  top: 300px;
-  /* no JS moves this — it just sits here */
-}
+/* add animation so the target not only blink, but also */
+/* become larger only when the player click around it
+and it should shrink right back to its tiny circle of halo
+unless player passed the level then on the last "enlarge"
+it should engulf the screen with white light */
 
-
-
-
-/* #sparkler:before {
-	content: '';
-	width: 10px;
-	height: 25vh;
-	background: linear-gradient(to right, dimgray, silver);
-	position: absolute;
-	top: 0;
-	left: 0;
-	border-radius: 1rem;
-} */
-/* #sparkler:after {
-	content: '';
-	width: 4px;
-	height: 25vh;
-	background: linear-gradient(to right, dimgray, gray);
-	position: absolute;
-	top: calc(25vh - 1px);
-	left: 3px;
-	border-radius: 1rem;
-} */
-
+/* Particle divs made when clicking in the halo */
 .particle {
 	width: 3px;
 	height: 3px;
@@ -75,142 +70,26 @@ body {
 	filter: blur(3px);
 	position: absolute;
 	transition: .5s linear;
-	z-index: 100;
+	z-index: 3;
 }
 
-.mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle 200px at center, transparent 80px, black 120px);
-  z-index: 100;
-}
-
-
-
-
-/* CANDLE START HERE */
-@import url('https://fonts.googleapis.com/css?family=Ubuntu:400,400i,700,700i');
-
-
-*, *:before, *:after {
-	margin: 0;
-	padding: 0;
-	word-break: break-all;
-  box-sizing: border-box;
-  scroll-behavior: smooth;
-}
-
-html {
-  font-size: 10px;
-}
-
-body {
-	font-family: 'Ubuntu', sans-serif;
-	color: #6e6e6e;
-	font-size: 1.6rem;
-  background: black;
-}
-
-header, footer {
-  display: block;
-}
-
-a, a:link, a:visited {
-  text-decoration: none;
-}
-
-img {
-	border: 0;
-}
-
-ul {
-	list-style: none;
-}
-
-.center {
-  width: 1170px;
-  margin: 20px auto 0;
-}
-
-/* .holder {
-  margin: 12rem auto 0;
-  width: 150px;
-  height: 400px;
-  position: relative;
-}
-
-.holder *, .holder *:before, .holder *:after {
-  position: absolute;
-  content: "";
-} */
-
-/* .candle {
-  bottom: 0;
-  width: 150px;
-  height: 300px;
-  border-radius: 150px / 40px;
-  box-shadow: inset 20px -30px 50px 0 rgba(0, 0, 0, 0.4), inset -20px 0 50px 0 rgba(0, 0, 0, 0.4);
-  background: #190f02;
-  background: linear-gradient(#e48825, #e78e0e, #833c03, #4c1a03 50%, #1c0900);
-}
-
-.candle:before {
-  width: 100%;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #d47401;
-  background: #b86409;
-  background: radial-gradient(#eaa121, #8e4901 45%, #b86409 80%);
-} */
-
-/* .candle:after {
-  width: 34px;
-  height: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  top: 14px;
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
-  background: radial-gradient(rgba(0, 0, 0, 0.6), transparent 45%);
-}
-
-.thread {  
-  width: 5px;
-  height: 36px;
-  top: -17px;
-  left: 50%;
-  z-index: 1;
-  border-radius: 40% 40% 0 0;
-  transform: translateX(-50%);
-  background: #121212;
-  background: linear-gradient(#d6994a, #4b232c, #121212, black, #e8bb31 90%);
-} */
-
+/* Flame that is the center bright dot of the sparkler halo */
 .flame {
   width: 10px;
   height: 10.3px;
   left: 50%;
-  /* transform-origin: 50% 50%; */
-  /* transform: translateX(-50%); */
-  /* transform: translate(-50%, -50%) rotate(-25deg); */
   bottom: 50%;
   top: 50%;
-  /* border-radius: 50% 50% 20% 20%; */
   border-radius: 75%;
-  background: rgba(255, 255, 255, 1);
   filter: blur(0.5px);
   background: radial-gradient(white 80%, transparent);
   animation: moveFlame 6s linear infinite, enlargeFlame 2s linear infinite, blinkIt 2s infinite;
   position: fixed;
   pointer-events: none;
-  z-index: 101; /* stacking order */
+  z-index: 2; /* stacking order */
 }
 
+/* Soft glow around the flame */
 .flame:after {
   width: 11.5px;
   height: 11.5px;
@@ -219,7 +98,55 @@ ul {
 }
 
 
+/* Applying different effects (colors and size) on target sparkler, override default sparkler and flame */
+#target-sparkler {
+  box-shadow: 0 0 150px 20px white, 
+              0 0 50px 20px rgb(93, 179, 228);
+  /* opacity: 1; */
+  z-index: 2;
+}
 
+#target-flame {
+  background: radial-gradient(rgb(115, 206, 252));
+  z-index: 2;
+  /* opacity: 1; */
+}
+
+#target-sparkler, #target-flame {
+  position: fixed;
+  z-index: 0;
+  /* opacity: 0; */
+  /* transition: opacity 10s ease; */
+}
+
+#light {
+  position: absolute;
+  background:white;
+  width: 1px;
+  height: 1px;
+  left: var(--start-x);
+  top: var(--start-y);
+  border-radius: 100%;
+  animation: engulfScreen 4s ease-out forwards;
+  z-index: 100;
+}
+
+@keyframes engulfScreen {
+  0% {
+    transform: scale(1);
+    opacity:1;
+  }
+  50% {
+    transform: scale(10000);
+  }
+  100% {
+    opacity:0;
+  }
+}
+
+
+/* Animation keyframes ALWAYS applied on center flames and halo*/
+/* Used on flame */
 @keyframes moveFlame {
   0% {
     transform: rotate(0deg);
@@ -229,6 +156,7 @@ ul {
   }
 }
 
+/* Used on flame */
 @keyframes enlargeFlame {
   0%, 100% {
     width: 10px;
@@ -240,6 +168,19 @@ ul {
   }
 }
 
+/* Used on flame */
+@keyframes blinkIt {
+  50% { opacity: 0.8;}
+  0%, 100% { opacity: 1.0;}
+}
+
+/* Used on sparkler halo*/
+@keyframes brighter {
+  50% { opacity: .1;}
+}
+
+
+/* Animation keyframes applied on flames and halos when clicked */
 @keyframes flameClicked {
   0%, 100% {
     width: 10px;
@@ -253,7 +194,7 @@ ul {
   }
 }
 
-@keyframes sparklerClicked {
+/* @keyframes sparklerClicked {
   0% {
     box-shadow: 0 0 250px 20px white, 
               0 0 100px 30px gold;
@@ -269,92 +210,169 @@ ul {
               0 0 100px 30px gold;
     transform: rotate(360deg);
   }
+} */
+
+@keyframes sparklerClicked {
+  0% {
+    box-shadow: 0 0 var(--glow-size) 20px white, 
+                0 0 var(--color-size) 30px var(--color-spark);
+    transform: rotate(0deg);
+  }
+  50% {
+    box-shadow: 0 0 calc(var(--glow-size) / 2) 30px white,
+                0 0 calc(var(--glow-size) / 2) 40px var(--color-spark);
+    transform: rotate(180deg);
+  }
+  100% {
+    box-shadow: 0 0 var(--glow-size) 20px white, 
+                0 0 var(--color-size) 30px var(--color-spark);
+    transform: rotate(360deg);
+  }
 }
 
+@keyframes beatLightShrinking {
+  0% {
+    width: 80px;   /* how big it grows — match target halo size */
+    height: 80px;
+    opacity: 0;     /* fades out as it reaches the edge */
+  }
+  100% {
+    width: 0px;
+    height: 0px;
+    opacity: 1;
+  }
+}
+
+#score {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px; 
+  text-align: center; 
+  color: white;
+  z-index: 200;
+}
+
+/* make the target "weaker" too when the indicator go into it? as if it's damaged? */
+/* this will need linking to music system so we wait until after that */
+/* music system => beat light indicator => "dying" animation for the target sparkle
+=> level switching logic and adding targets */
+@keyframes beatLightGrowing {
+  0% {
+    width: 9px;
+    height: 9px;
+    opacity: 1;
+  }
+  100% {
+    width: 80px;   /* how big it grows — match target halo size */
+    height: 80px;
+    opacity: 0;     /* fades out as it reaches the edge */
+  }
+}
+
+
+
+#beat-indicator {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+
+  /* Step 2: Turn square into circle */
+  border-radius: 100%;
+
+  /* Step 3: Create the hollow look */
+  border: 3px solid var(--beat-color, #97b0c0 ); /* Pick your color and thickness */
+  background-color: transparent; 
+  left: var(--start-x);
+  top: var(--start-y);
+  transform: translate(-50%, -50%);
+  /* animation: beatLightShrinking 2s infinite; */
+  z-index: 0;
+}
+
+/* Pseudoclasses to trigger animations on sparkler and flames when clicked */
 .sparkler-clicked {
   animation: sparklerClicked 0.53s ease-out !important;
 }
-
 
 .flame-clicked {
   animation: flameClicked 0.35s ease-out;
 }
 
-/* .glow {
-  width: 15px;
-  height: 60px;
-  border-radius: 50% 50% 35% 35%;
-  left: 50%;
-  top: -48px;
-  transform: translateX(-50%);
-  background: white;
-  box-shadow: 0 -40px 30px 0 #dc8a0c, 0 40px 50px 0 #dc8a0c, inset 3px 0 2px 0 rgba(180, 162, 75, 0.6), inset -3px 0 2px 0 rgba(242, 243, 244, 0.6);
+.beatlight-clicked {
+  animation: beatLightGrowing 0.5s ease-out !important;
 }
 
-.glow:before {
-  width: 70%;
-  height: 60%;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 0;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
+.beatlight-unactivated {
+  opacity: 0;
 }
 
 
-*/
 
-
-.blinking-glow {
-  width: 100px;
-  height: 180px;
-  left: 50%;
-  top: -55%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: #ff6000;
-  filter: blur(60px);
-  /* animation: blinkIt 1s infinite; */
-  opacity: .8;
-} 
-
-
-@keyframes blinkIt {
-  50% { opacity: 0.8;}
-  0%, 100% { opacity: 1.0;}
+#player-sparkler {
+  --glow-size: 250px;
+  --color-size: 100px;
+  --color-spark: gold;
 }
 
-/* new frame */
-@keyframes brighter {
-  50% { opacity: .1;}
+#target-sparkler {
+  --glow-size: 150px;
+  --color-size: 50px;
+  --color-spark: rgba(93, 179, 228, 0.7);
 }
 
-#scene {
-  z-index:0;
+
+#retry-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  z-index: 300;
 }
+
+#retry-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#retry-box {
+  background: black;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+#retry-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
 
 
 
 /* what to do next*/
-/* 
-make candle become your cursor without flame V
-but make it do what the flame is doing (probably make flame smaller into a circle?) V
-make the glow be around that flame V
-make flame ur cursor V 
-make sparks appear when you click V
-make the flame blink dimming, and the halo also dimming V
-make the flame brighter and bigger a little when clicked, V
-and the halo also become brighter and bigger when clicked, V
-but shrink back afterward V
-make the sparks follow some better path
-make it so the sparks is "brightening" the surrounding when it get closer V
-and can brighten more, when it's clicked V
- */
-
-
  /*
-Put a scene picture
-Make another spark that's the target, just sitting on screen somewhere
+Put a scene picture V
+Make another spark that's the target, just sitting on screen somewhere V
+Switch to canvas instead of black mask to make more holes
+Make it so the spark was hidden before the player got close to the spark
+and clicked
+then the target spark can become a light source that cut through the black mask
 Interaction logic between the two sparks (calculate distance)
 (if close enough?)
 Animation for the spark being in harmony
@@ -364,4 +382,5 @@ Candle litting logic
 Music beat logic, how to know player is clicking on beat?
 Note for the player spark
 how to play background music
+fix hole size for player to mmake it smaller to fit original size in the starting screen
  */

@@ -8,11 +8,24 @@
     <title>Sparkles</title>
 </head>
 <body>
-    A light source? What is it?
-    <div class="mask"></div>
-    <img id=scene src="bottle.jpg">
-    <div id="sparkler" class= "sparkler"></div>
-    <div id="target" class="sparkler"></div>
+    <p style="margin-top: -20px;">Click to start</p>
+    <!-- Black Mask -->
+    <canvas id="mask"></canvas>
+
+    <!-- Scene Picture -->
+    
+
+    <!-- Player -->
+    <div id="player-flame" class= "flame active"></div>
+    <div id="player-sparkler" class="sparkler active"></div>
+
+    <!-- Target -->
+    <div id="target-flame" class= "flame"></div>
+    <div id="target-sparkler" class="sparkler"></div>
+
+    <div id="beat-indicator" class="beatlight-unactivated"></div>
+    <div id="score">Accuracy: </div>
+
     <script src="game.js"></script>
 </body>
 
@@ -21,7 +34,6 @@
     <div class="blinking-glow"></div>
     <div class="thread"></div>
     <div class="glow"></div>
-    <div class="flame"></div>
   </div>
 </div>
 
