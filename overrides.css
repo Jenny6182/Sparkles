@@ -1,0 +1,174 @@
+/* Overrides layered on top of style.css (original files unchanged) */
+
+/* Local Priestacy font (you placed Priestacy.otf in project root) */
+@font-face {
+  font-family: "Priestacy";
+  src: local("Priestacy"), url("./Priestacy.otf") format("opentype");
+  font-display: swap;
+}
+
+:root {
+  --ui-font: "Priestacy", "Segoe Script", "Bradley Hand", "Comic Sans MS", cursive;
+}
+
+/* Make all UI writing use Priestacy */
+body,
+button,
+input,
+textarea {
+  font-family: var(--ui-font);
+}
+
+/* Full-bleed scene image */
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+  /* Keep scene behind everything else so hidden targets can be revealed through the mask */
+  z-index: -1;
+}
+
+/* Ensure orbs are above the scene + mask */
+#player-sparkler,
+#player-flame {
+  z-index: 2 !important;
+}
+
+/* Target layering is handled by style.css (#target-* ends up z-index: 0) */
+
+/* Beat indicator should be visible above the scene */
+#beat-indicator {
+  z-index: 2 !important;
+}
+
+/* Start screen text */
+#start-text {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--ui-font);
+  font-size: clamp(22px, 3vw, 44px);
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 24px rgba(255, 215, 0, 0.35);
+  z-index: 250;
+  margin: 0;
+  pointer-events: none;
+}
+
+/* Accuracy HUD (only visible once level starts; controlled by JS) */
+#score {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  left: auto;
+  transform: none;
+  font-family: var(--ui-font);
+  font-size: 26px;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.95);
+  z-index: 250;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 0 22px rgba(0, 0, 0, 0.35);
+}
+
+#accuracy-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#accuracy-text {
+  min-width: 64px; /* keeps bar from jumping when digits change */
+}
+
+#accuracy-bar {
+  position: relative;
+  width: 160px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(255, 215, 0, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.9);
+}
+
+#accuracy-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 180, 80, 0.35), rgba(255, 215, 120, 0.9));
+  box-shadow: 0 0 14px rgba(255, 205, 120, 0.35);
+}
+
+#accuracy-flare {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255, 210, 120, 0.55) 35%, rgba(255, 210, 120, 0) 70%);
+  filter: blur(0.2px);
+  pointer-events: none;
+}
+
+/* Target fail dim animation */
+#target-sparkler,
+#target-flame {
+  transition: filter 650ms ease, opacity 650ms ease;
+}
+
+.target-dimmed {
+  filter: brightness(0.45) saturate(0.6);
+  opacity: 0.65;
+}
+
+/* Retry UI: not a popup, just text + button above mask */
+#retry-overlay {
+  background: transparent !important;
+  z-index: 260;
+}
+
+#retry-box {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  text-align: center;
+  transform: translateY(-92px);
+}
+
+#retry-box p {
+  margin: 0 0 14px 0;
+  font-size: clamp(18px, 1.7vw, 28px);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 18px rgba(255, 210, 120, 0.22);
+}
+
+#retry-btn {
+  font-family: var(--ui-font);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 215, 120, 0.35);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 16px;
+  backdrop-filter: blur(6px);
+}
+
+#retry-btn:hover {
+  border-color: rgba(255, 215, 120, 0.7);
+}
+
