@@ -9,7 +9,7 @@ const levels = [
     beatTimes: [0.0, 1.714, 2.571, 4.286, 5.143, 6.857, 7.714, 9.429, 10.286, 12, 12.857, 14.571, 15.429],
     passingAccuracy: 0.5,
     maxError: 0.25,
-    targets: {
+    target: {
       x: 0.50,  // center of bottle
       y: 0.86,  // closer to bottle floor
       color: 'rgba(93, 179, 228, 0.7)',
