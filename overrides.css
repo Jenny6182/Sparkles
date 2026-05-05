@@ -172,3 +172,32 @@ textarea {
   border-color: rgba(255, 215, 120, 0.7);
 }
 
+/* Override target styling: hide anchor targets initially, show correct colors when active */
+#target-sparkler {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+#target-flame {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* When anchor is active, show it with the correct color from --color-spark variable */
+#target-sparkler.active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  box-shadow: 0 0 150px 20px white, 
+              0 0 50px 20px var(--color-spark) !important;
+  animation: blinkIt 2s infinite;
+}
+
+#target-flame.active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  background: radial-gradient(var(--color-spark) 80%, transparent) !important;
+  animation: moveFlame 6s linear infinite, enlargeFlame 2s linear infinite, blinkIt 2s infinite;
+}
+

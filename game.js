@@ -17,7 +17,6 @@ let levelStarted = false
 // 5. if win => levelPassed, if not win => levelPassed=0, go back to 2
 
 
-let targetClose = false
 let targetActivated = false  // init target to be deactivated
 // so it stays invisible until clicked
 
@@ -41,9 +40,9 @@ const total_notes = 13; // total notes that should have been hit in the song
 let hit_notes = 0; // number of nodes hit curretnly
 
 // Relevant audios
-const playerSound = new Audio("click.wav");
-const tutorialSoundtrack = new Audio("tutorial_last_note_cut.wav");
-const lastNote = new Audio("last_note.wav")
+const playerSound = new Audio("./soundtrack/click.wav");
+const tutorialSoundtrack = new Audio("./soundtrack/tutorial_last_note_cut.wav");
+const lastNote = new Audio("./soundtrack/last_note.wav")
 
 // Logic for music scoring (rhythm_accuracy)
 let accuracy = 0.0;
@@ -92,7 +91,7 @@ function engulfingLight(positionX, positionY) {
 
 // 1. Game starting listener 
 document.addEventListener("click", function handleClick() {
-  addNewScene("bottle.jpg"); // to start the game
+  addNewScene("./scenes/bottle.jpg"); // to start the game
   // remove listener so it never runs again
   document.removeEventListener("click", handleClick);
   engulfingLight(cursorX, cursorY)
@@ -422,7 +421,6 @@ function beatLightGrow() {
   setTimeout(() => {
     beatlight.style.setProperty('--beat-color',   '#97b0c0')
   }, 600)
-
 }
 
 function playSound(sound) {
@@ -457,7 +455,7 @@ tutorialSoundtrack.addEventListener("ended", () => {
 // if pass, scene transition + target should flash
 function level_passed(target_posX, target_posY) {
   engulfingLight(target_posX, target_posY)
-  sceneTransition('opened_bottle.jpg')
+  sceneTransition('./scenes/opened_bottle.jpg')
   document.getElementById("scene").style.zIndex = "10";
 }
 

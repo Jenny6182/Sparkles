@@ -7,6 +7,19 @@
 let cursorX = window.innerWidth / 2
 let cursorY = window.innerHeight / 2
 
+let player
+
+function initPlayer() {
+  player = new Orb(cursorX, cursorY, {
+    sparklerId: 'player-sparkler',
+    flameId: 'player-flame',
+    glowSize: '250px',
+    colorSize: '100px',
+    color: 'gold',
+    zIndex: 2
+  })
+}
+
 // ---- Game States ----
 const GameState = {
   INTRO: 'intro',                  // starting screen
@@ -28,14 +41,7 @@ const introAudio = new AudioController({
 introAudio.preload().catch(() => {}) // best-effort preload; actual start requires gesture
 
 // Initialize player orb at INTRO
-let player = new Orb(cursorX, cursorY, {
-  sparklerId: 'player-sparkler',
-  flameId: 'player-flame',
-  glowSize: '250px',
-  colorSize: '100px',
-  color: 'gold',
-  zIndex: 2
-})
+initPlayer()
 
 // state setter
 function setState(newState) {
@@ -60,7 +66,8 @@ function setState(newState) {
 
     case GameState.PASSED:
       // trigger engulf animation; swap reveal scene almost immediately (avoid perceived "lag")
-      engulfingLight(target.x, target.y)
+      const anchor = targets.find(t => t.type === "anchor") // find anchor from list of targets
+      if (anchor) engulfingLight(anchor.x, anchor.y) // play engulflight centered around anchor
       setTimeout(() => {
         loadScene(levels[currentLevelIndex].revealScene)
         setState(GameState.WAITING_NEXT)
@@ -69,8 +76,10 @@ function setState(newState) {
 
     case GameState.FAILED:
       // Show retry UI immediately on fail (no perceived lag)
-      if (target?.sparkler) target.sparkler.classList.add('target-dimmed')
-      if (target?.flame) target.flame.classList.add('target-dimmed')
+      targets.forEach(t => { // do dimming animation for all visible targets
+        t.sparkler?.classList.add('target-dimmed')
+        t.flame?.classList.add('target-dimmed')
+      })
       setState(GameState.WAITING_RETRY)
       break
 
@@ -87,7 +96,8 @@ function setState(newState) {
 
 // ---- Level setup ----
 let currentLevelIndex = 0
-let audio, rhythm, target
+let audio, rhythm // to initialize rhythmEngine and audioController
+let targets = [] // initialize the list of targets shared across levels
 let passTriggered = false
 let endTriggered = false
 
@@ -95,10 +105,12 @@ function initLevel(levelIndex) {
   const levelData = levels[levelIndex]
 
   // cleanup old target from previous level
-  if (target) {
-    target.sparkler.remove()
-    target.flame.remove()
-  }
+  targets.forEach(t => {
+    t.sparkler.remove()
+    t.flame.remove()
+  })
+
+  targets = [] // reset targets array for each level after clean up
 
   // reset player orb for new level
   player.deactivate()
@@ -108,22 +120,33 @@ function initLevel(levelIndex) {
   loadScene(levelData.scene)
 
   // create target orb
-  const targetX = window.innerWidth * levelData.target.x
-  const targetY = window.innerHeight * levelData.target.y
 
-  target = new Orb(targetX, targetY, {
-    sparklerId: 'target-sparkler',
-    flameId: 'target-flame',
-    color: levelData.target.color,
-    glowSize: levelData.target.glowSize,
-    colorSize: levelData.target.colorSize,
-    // Match original behavior: target exists under mask and is revealed by holes.
-    // Do NOT opacity-hide it; do NOT force z-index (style.css handles it).
-    startsHidden: false
+  // create map to store target instances created using target information in targets array from level data
+  targets = levelData.targets.map(t => { // t is each element in levelData.targets array
+  const x = window.innerWidth * t.x // position x
+  const y = window.innerHeight * t.y // position y
+
+  const orb = new Orb(x, y, {
+    sparklerId: t.type === "anchor" ? "target-sparkler" : "note-sparkler",
+    flameId: t.type === "anchor" ? "target-flame" : "note-flame",
+    color: t.color,
+    glowSize: t.glowSize,
+    colorSize: t.colorSize,
+    activationRadius: t.activationRadius,
+    startsHidden: t.type === "anchor" ? true : false  // anchor targets start hidden under mask
   })
 
-  if (target?.sparkler) target.sparkler.classList.remove('target-dimmed')
-  if (target?.flame) target.flame.classList.remove('target-dimmed')
+  // attach gameplay properties
+  orb.type = t.type
+  orb.time = t.time
+  orb.window = t.window
+  orb.activationRadius = t.activationRadius
+
+  orb.activated = false
+  orb.visible = false
+
+  return orb
+  })
 
   // load audio for this level
   audio = new AudioController(levelData)
@@ -137,10 +160,11 @@ function initLevel(levelIndex) {
   endTriggered = false
 
   // position beat indicator at target
-  const beatIndicator = document.querySelector('#beat-indicator')
-  if (beatIndicator) {
-    beatIndicator.style.setProperty('--start-x', targetX + 'px')
-    beatIndicator.style.setProperty('--start-y', targetY + 'px')
+  const anchor = targets.find(t => t.type === "anchor")
+
+  if (beatIndicator && anchor) {
+    beatIndicator.style.setProperty('--start-x', anchor.x + 'px')
+    beatIndicator.style.setProperty('--start-y', anchor.y + 'px')
     beatIndicator.classList.add('beatlight-unactivated')
   }
 
@@ -161,7 +185,6 @@ function onSongEnded() {
     setState(GameState.FAILED)
   }
 }
-
 
 // ---- Mouse tracking ----
 window.addEventListener('mousemove', (e) => {
@@ -212,42 +235,63 @@ window.addEventListener('click', async () => {
   handleGameClick()
 })
 
-function handleGameClick() {
-  if (!player || !target || !audio) return
 
-  // always: pulse player and spawn sparks and play player's note sound
+function handleGameClick() {
+  if (!player || !audio || !rhythm) return
+
+  // always player click feedback
   player.pulse()
   player.spark(20, 'gold')
   audio.playClick()
 
-  // if close to target — interact with it
-  const levelData = levels[currentLevelIndex]
-  if (target.isCloseTo(cursorX, cursorY, levelData.target.activationRadius)) {
+  const time = audio.currentTime
+  let started = false
 
-    // activate target on first close click
-    if (!target.activated) {
-      target.activate()
-      const beatIndicator = document.querySelector('#beat-indicator')
-      if (beatIndicator) beatIndicator.classList.remove('beatlight-unactivated')
-      showScore()
-      updateScore(0)
-      setState(GameState.PLAYING)
-    }
+  targets.forEach(t => {
+    const dist = t.isCloseTo(cursorX, cursorY, t.activationRadius)
 
-    // pulse target and spawn its sparks
-    if (target.activated) {
-      target.pulse()
-      target.spark(10, levelData.target.color)
-      beatLightGrow(target.x, target.y)
-    }
+    // ANCHOR TARGET
+    if (t.type === "anchor") {
+      if (!t.activated && dist) {
+        t.activate()  // Call activate() to add .active class and show the target
+        started = true
 
-    // score the click if song is playing
-    if (currentState === GameState.PLAYING) {
-      const accuracy = rhythm.hit(audio.currentTime)
-      if (accuracy !== null) {
-        updateScore(accuracy)
+        showScore()
+        updateScore(0)
+      }
+
+      if (t.activated && dist) {
+        t.pulse()
+        t.spark(10, t.color)
+        beatLightGrow(t.x, t.y)
       }
     }
+
+    // NOTE TARGET
+    if (t.type === "note" && currentState === GameState.PLAYING) {
+
+      const inWindow =
+        Math.abs(time - t.time) <= t.window
+
+      const isVisible = t.visible === true
+
+      if (isVisible && inWindow && dist) {
+        const accuracy = rhythm.hit(time)
+
+        if (accuracy !== null) {
+          updateScore(accuracy)
+        }
+
+        t.pulse()
+        t.spark(10, t.color)
+        beatLightGrow(t.x, t.y)
+      }
+    }
+  })
+
+  // apply state once
+  if (started) {
+    setState(GameState.PLAYING)
   }
 }
 
@@ -259,8 +303,10 @@ const retryBtn = document.getElementById('retry-btn')
 if (retryBtn) {
   retryBtn.addEventListener('click', () => {
     retryOverlay.classList.remove('show')
-    if (target?.sparkler) target.sparkler.classList.remove('target-dimmed')
-    if (target?.flame) target.flame.classList.remove('target-dimmed')
+    targets.forEach(t => { // remove every target-dimmed tag on each target when retry button is clicked
+      t.sparkler?.classList.remove('target-dimmed')
+      t.flame?.classList.remove('target-dimmed')
+    })
     setState(GameState.READY)
   })
 }
@@ -268,18 +314,47 @@ if (retryBtn) {
 
 // ---- Game loop ----
 function gameLoop() {
+  const time = audio?.currentTime ?? 0
+
+  targets.forEach(t => {
+    if (t.type === "anchor") {
+      t.visible = true
+    }
+
+    if (t.type === "note") {
+      t.visible = Math.abs(time - t.time) <= t.window
+    }
+  })
+
   const isPassed = currentState === GameState.PASSED ||
                    currentState === GameState.WAITING_NEXT
 
   // draw mask — pass all active targets as array
-  const targets = target ? [target] : []
+  // const targetsForMask = targets
+  const targetsForMask = targets.filter(t => t.visible)
   const playerPos = player || { x: cursorX, y: cursorY }
-  drawHoleOnMask(playerPos, targets, isPassed)
+  drawHoleOnMask(playerPos, targetsForMask, isPassed)
 
   // draw beat indicator ring
-  if (currentState === GameState.PLAYING && rhythm && audio && target) {
-    drawBeatIndicator(target, rhythm, audio.currentTime)
+  if (currentState === GameState.PLAYING && rhythm && audio) {
+  const time = audio.currentTime
+
+  // find active note first
+  let activeNote = targets.find(t =>
+    t.type === "note" &&
+    t.visible &&
+    Math.abs(time - t.time) <= t.window
+  )
+
+  if (activeNote) {
+    drawBeatIndicator(activeNote, rhythm, time)
+  } else {
+    const anchor = targets.find(t => t.type === "anchor" && t.activated)
+    if (anchor) {
+      drawBeatIndicator(anchor, rhythm, time)
+    }
   }
+}
 
   // check for missed beats
   if (currentState === GameState.PLAYING && rhythm && audio) {

@@ -100,14 +100,15 @@ it should engulf the screen with white light */
 
 /* Applying different effects (colors and size) on target sparkler, override default sparkler and flame */
 #target-sparkler {
-  box-shadow: 0 0 150px 20px white, 
-              0 0 50px 20px rgb(93, 179, 228);
-  /* opacity: 1; */
-  z-index: 2;
+  #target-sparkler {
+  box-shadow: 
+    0 0 var(--glow-size) 20px white,
+    0 0 var(--color-size) 30px var(--color-spark);
+}
 }
 
 #target-flame {
-  background: radial-gradient(rgb(115, 206, 252));
+  background: radial-gradient(white 40%, var(--color-spark));
   z-index: 2;
   /* opacity: 1; */
 }
