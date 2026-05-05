@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://unpkg.com/tone"></script>
-    <link rel="stylesheet" href="style.css">
-    <title>Sparkles</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/tone"></script>
+  <link rel="stylesheet" href="app.css">
+  <title>Sparkles</title>
 </head>
 <body>
-    <p style="margin-top: -20px;">Click to start</p>
-    <!-- Black Mask -->
-    <canvas id="mask"></canvas>
+  <p id="start-text">Click to start</p>
+  <!-- The black canvas mask -->
+  <canvas id="mask"></canvas>
 
-    <!-- Scene Picture -->
-    
-
-    <!-- Player -->
-    <div id="player-flame" class= "flame active"></div>
-    <div id="player-sparkler" class="sparkler active"></div>
-
-    <!-- Target -->
-    <div id="target-flame" class= "flame"></div>
-    <div id="target-sparkler" class="sparkler"></div>
-
-    <div id="beat-indicator" class="beatlight-unactivated"></div>
-    <div id="score">Accuracy: </div>
-
-    <script src="game.js"></script>
-</body>
-
-<div class="holder">
-  <div class="candle">
-    <div class="blinking-glow"></div>
-    <div class="thread"></div>
-    <div class="glow"></div>
+  <!-- Retry overlay -->
+  <div id="retry-overlay">
+    <div id="retry-box">
+      <p>The spark still needs your help... retry?</p>
+      <button id="retry-btn">OK</button>
+    </div>
   </div>
-</div>
 
+  <!-- Progress bar using accuracy -->
+  <div id="score" aria-label="Accuracy HUD">
+    <div id="accuracy-row">
+      <span id="accuracy-text">0%</span>
+      <div id="accuracy-bar" aria-hidden="true">
+        <div id="accuracy-fill"></div>
+        <div id="accuracy-flare"></div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Beat indicator -->
+  <div id="beat-indicator" class="beatlight-unactivated"></div>
+
+  <!-- All js scripts, order is required -->
+  <script src="levels.js"></script>
+  <script src="audio.js"></script>
+  <script src="rhythm.js"></script>
+  <script src="orb.js"></script>
+  <script src="visuals.js"></script>
+  <script src="game_refactored.js"></script>
+</body>
 </html>
