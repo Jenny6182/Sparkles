@@ -68,14 +68,20 @@ function setState(newState) {
       break
 
     case GameState.FAILED:
-      // Show retry UI immediately on fail (no perceived lag)
+      // Show retry UI after 0.5 seconds
       if (target?.sparkler) target.sparkler.classList.add('target-dimmed')
       if (target?.flame) target.flame.classList.add('target-dimmed')
-      setState(GameState.WAITING_RETRY)
+      currentState = GameState.WAITING_RETRY  // set state without recursion
+      setTimeout(() => {
+        showRetryOverlay()
+      }, 500)
       break
 
     case GameState.WAITING_NEXT:
-      // revealed scene is showing — wait for click to continue
+      // revealed scene is showing — show success overlay after a delay for animations
+      setTimeout(() => {
+        showSuccessOverlay()
+      }, 1500)
       break
 
     case GameState.WAITING_RETRY:
@@ -193,9 +199,7 @@ window.addEventListener('click', async () => {
       return
 
     case GameState.WAITING_NEXT:
-      // advance to next level
-      currentLevelIndex = (currentLevelIndex + 1) % levels.length
-      setState(GameState.READY)
+      // handled by success overlay button — do nothing on general click
       return
 
     case GameState.WAITING_RETRY:
@@ -255,12 +259,40 @@ function handleGameClick() {
 // ---- Retry overlay ----
 const retryOverlay = document.getElementById('retry-overlay')
 const retryBtn = document.getElementById('retry-btn')
+const retryText = document.getElementById('retry-text')
+
+function showRetryOverlay() {
+  if (retryText) {
+    retryText.textContent = levels[currentLevelIndex].retryMessage
+  }
+  retryOverlay.classList.add('show')
+}
 
 if (retryBtn) {
   retryBtn.addEventListener('click', () => {
     retryOverlay.classList.remove('show')
     if (target?.sparkler) target.sparkler.classList.remove('target-dimmed')
     if (target?.flame) target.flame.classList.remove('target-dimmed')
+    setState(GameState.READY)
+  })
+}
+
+// ---- Success overlay ----
+const successOverlay = document.getElementById('success-overlay')
+const nextBtn = document.getElementById('next-btn')
+const successText = document.getElementById('success-text')
+
+function showSuccessOverlay() {
+  if (successText) {
+    successText.textContent = levels[currentLevelIndex].successMessage
+  }
+  successOverlay.classList.add('show')
+}
+
+if (nextBtn) {
+  nextBtn.addEventListener('click', () => {
+    successOverlay.classList.remove('show')
+    currentLevelIndex = (currentLevelIndex + 1) % levels.length
     setState(GameState.READY)
   })
 }
