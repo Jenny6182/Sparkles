@@ -24,7 +24,7 @@ const levels = [
   { // level 1
     scene: './scenes/under_sea.jpg',
     revealScene: './scenes/above_sea.jpg',
-    soundtrack: './soundtrack/tutorial_shortened.wav',
+    soundtrack: './soundtrack/level1.wav',
     beatTimes: [0.0, 1.714, 2.571, 4.286, 5.143, 6.857, 7.714, 9.429, 10.286, 12, 12.857, 14.571, 15.429],
     passingAccuracy: 0.5,
     maxError: 0.25,
