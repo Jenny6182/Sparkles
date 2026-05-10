@@ -1,5 +1,5 @@
 # Sparkles
-A browser-based rhythm game built with vanilla JS, HTML, and CSS. No frameworks, no build step.
+A browser-based rhythm game built with vanilla JS, HTML, and CSS. No framework is used.
 
 [▶ Play here](https://jenny6182.github.io/Sparkles/)
 
