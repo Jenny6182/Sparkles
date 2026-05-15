@@ -82,6 +82,22 @@ class Orb {
     this.flame.classList.remove('active')
   }
 
+  hide() {
+    // CSS animations (blinkIt / flame) can override opacity visually,
+    // so disable animations entirely until activation.
+    this.sparkler.style.opacity = '0'
+    this.flame.style.opacity = '0'
+    this.sparkler.style.animation = 'none'
+    this.flame.style.animation = 'none'
+  }
+
+  show() {
+    this.sparkler.style.opacity = '1'
+    this.flame.style.opacity = '1'
+    this.sparkler.style.animation = ''
+    this.flame.style.animation = ''
+  }
+
     // internal helper — adds a class, removes it after duration
   _triggerAnimation(element, className, duration) {
     element.classList.add(className)
