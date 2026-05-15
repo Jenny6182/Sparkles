@@ -7,6 +7,7 @@ spawnparticle(), spark(): sparkle draws one particle flying out of a center, spa
 pulseSparkle(): trigger the animation of enlarging halo and enlarging flame
 
 */
+// TODO: add a child class that is "appearing disappearing" sparks
 
 class Orb {
     constructor(x, y, options = {}) {
@@ -45,17 +46,6 @@ class Orb {
       this.flame.style.zIndex = String(options.zIndex)
     }
 
-    // allow targets to start hidden until activated (matches original intent)
-    this._startsHidden = Boolean(options.startsHidden)
-    if (this._startsHidden) {
-      this.sparkler.style.opacity = '0'
-      this.flame.style.opacity = '0'
-      // CSS animations (blinkIt / flame) can override opacity visually,
-      // so disable animations entirely until activation.
-      this.sparkler.style.animation = 'none'
-      this.flame.style.animation = 'none'
-    }
-
     this.moveTo(x, y)
   }
 
@@ -75,32 +65,6 @@ class Orb {
     this._triggerAnimation(this.flame, 'flame-clicked', 600)
   }
 
-  // activate the orb — makes it permanently visible and glowing
-  activate() {
-    this.activated = true
-    this.sparkler.classList.add('active')
-    this.flame.classList.add('active')
-    if (this._startsHidden) {
-      this.sparkler.style.opacity = '1'
-      this.flame.style.opacity = '1'
-      this.sparkler.style.animation = ''
-      this.flame.style.animation = ''
-    }
-  }
-
-  // deactivate — used on level reset
-  deactivate() {
-    this.activated = false
-    this.sparkler.classList.remove('active')
-    this.flame.classList.remove('active')
-    if (this._startsHidden) {
-      this.sparkler.style.opacity = '0'
-      this.flame.style.opacity = '0'
-      this.sparkler.style.animation = 'none'
-      this.flame.style.animation = 'none'
-    }
-  }
-
   // check if a point is within threshold distance of this orb
   isCloseTo(x, y, threshold = 120) {
     return Math.hypot(x - this.x, y - this.y) < threshold
@@ -113,7 +77,12 @@ class Orb {
     }
   }
 
-  // internal helper — adds a class, removes it after duration
+  reset() {
+    this.sparkler.classList.remove('active')
+    this.flame.classList.remove('active')
+  }
+
+    // internal helper — adds a class, removes it after duration
   _triggerAnimation(element, className, duration) {
     element.classList.add(className)
     setTimeout(() => element.classList.remove(className), duration)

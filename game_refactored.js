@@ -22,7 +22,7 @@ let currentState = GameState.INTRO // initial state is starting screen
 
 // WebAudio-backed UI clicks (lower latency than <audio>)
 const introAudio = new AudioController({
-  soundtrack: './soundtrack/tutorial.wav', // required shape for preload()
+  soundtrack: './soundtrack/tutorial_shortened.wav', // required shape for preload()
   clickUrl: './soundtrack/click.wav',
 })
 introAudio.preload().catch(() => {}) // best-effort preload; actual start requires gesture
@@ -107,7 +107,7 @@ function initLevel(levelIndex) {
   }
 
   // reset player orb for new level
-  player.deactivate()
+  player.reset()
   player.moveTo(cursorX, cursorY)
 
   // load scene FIRST so targets sit above it (scene and target both use z-index 0 in style.css)
@@ -117,7 +117,7 @@ function initLevel(levelIndex) {
   const targetX = window.innerWidth * levelData.target.x
   const targetY = window.innerHeight * levelData.target.y
 
-  target = new Orb(targetX, targetY, {
+  target = new TargetOrb(targetX, targetY, {
     sparklerId: 'target-sparkler',
     flameId: 'target-flame',
     color: levelData.target.color,
@@ -174,6 +174,16 @@ window.addEventListener('mousemove', (e) => {
   cursorX = e.clientX
   cursorY = e.clientY
   if (player) player.moveTo(cursorX, cursorY)
+
+  // show/hide target based on hover proximity
+  if (target && !target.activated) {
+    const levelData = levels[currentLevelIndex]
+    if (target.isCloseTo(cursorX, cursorY, levelData.target.activationRadius)) {
+      target.show()
+    } else {
+      target.hide()
+    }
+  }
 })
 
 

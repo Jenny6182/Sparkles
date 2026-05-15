@@ -19,6 +19,13 @@ const levels = [
       colorSize: '50px',
       activationRadius: 120,  // px — how close player needs to be to activate
     }
+    // timed_orbs: [
+    //   { x: 0.5, // 1st one
+    //     y: 0.5,
+    //     appearsAt: 3,
+    //     duration: 3
+    //   }, 
+    // ]
   },
   
   { // level 1
@@ -42,8 +49,8 @@ const levels = [
     passingAccuracy: 0.5,
     maxError: 0.25,
     retryMessage: 'The spark is still freezing... try again?',
-    successMessage: 'I never knew the world was this beautiful, thank you for showing me...',
-    target: {
+    successMessage: 'I never knew the world was this beautiful, thank you for showing me.',
+    target: { // doesn't move
       x: 0.50,  // center of bottle
       y: 0.70,  // closer to bottle floor
       color: 'rgba(93, 179, 228, 0.7)',
@@ -51,6 +58,20 @@ const levels = [
       colorSize: '50px',
       activationRadius: 120,  // px — how close player needs to be to activate
     }
+    // sparks = [ // appears and disappears, will reuse orb functions but different
+    //   {
+    //   time: 10,
+    //   window: 10,
+    //   color: blue,
+    //   x: 0.3,
+    //   y: 0.7,
+    //   glowSize: '150px',
+    //   colorSize: '50px',
+    //   activationRadius: 120,  // px — how close player needs to be to activate
+    //   }, 
+    //   {}
+
+    // ]
   }
 
 
